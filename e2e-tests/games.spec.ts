@@ -118,6 +118,31 @@ test.describe('Game Listing and Navigation', () => {
     });
   });
 
+  test('should filter the games list by category and publisher', async ({ page }) => {
+    await test.step('Navigate to the homepage', async () => {
+      await page.goto('/');
+      await expect(page.getByTestId('games-grid')).toBeVisible();
+    });
+
+    await test.step('Apply category and publisher filters', async () => {
+      const categoryFilter = page.getByTestId('category-filter');
+      const publisherFilter = page.getByTestId('publisher-filter');
+
+      await categoryFilter.selectOption({ label: 'Strategy' });
+      await publisherFilter.selectOption({ label: 'CodeForge Studios' });
+      await page.getByTestId('apply-filters-button').click();
+    });
+
+    await test.step('Verify only matching games remain', async () => {
+      await expect(page).toHaveURL(/\/(\?|$)/);
+      const filteredCards = page.locator('[data-testid="game-card"]').filter({ has: page.locator(':visible') });
+      await expect(filteredCards).toHaveCount(1);
+      await expect(page.getByTestId('selected-category-tag')).toContainText('Strategy');
+      await expect(page.getByTestId('selected-publisher-tag')).toContainText('CodeForge Studios');
+      await expect(filteredCards.first().getByTestId('game-title')).toHaveText('DevOps Dominion');
+    });
+  });
+
   test('should return a 404 page for a non-existent game', async ({ page }) => {
     let response: Response | null;
 
