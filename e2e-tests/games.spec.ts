@@ -125,11 +125,8 @@ test.describe('Game Listing and Navigation', () => {
     });
 
     await test.step('Apply category and publisher filters', async () => {
-      const categoryFilter = page.getByTestId('category-filter');
-      const publisherFilter = page.getByTestId('publisher-filter');
-
-      await categoryFilter.selectOption({ label: 'Strategy' });
-      await publisherFilter.selectOption({ label: 'CodeForge Studios' });
+      await page.getByTestId('category-filter').getByText('Strategy', { exact: true }).click();
+      await page.getByTestId('publisher-filter').getByText('CodeForge Studios', { exact: true }).click();
       await page.getByTestId('apply-filters-button').click();
     });
 

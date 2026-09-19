@@ -20,68 +20,77 @@ export const prerender = true;
       subtitle="Find your next game! And maybe even back one! Explore our collection!"
     />
 
-    <div class="mb-8 rounded-xl border border-slate-700 bg-slate-800/50 p-5 shadow-lg" aria-label="Game filters">
-      <div class="flex flex-col gap-5 lg:flex-row lg:items-end">
-        <div class="flex-1">
-          <label for="category-filter" class="mb-2 block text-sm font-medium text-slate-200">Filter by category</label>
-          <select
-            id="category-filter"
-            name="category"
-            multiple
-            data-testid="category-filter"
-            class="min-h-32 w-full rounded-lg border border-slate-600 bg-slate-900 px-3 py-2 text-slate-100 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-            aria-label="Filter games by category"
-          >
+    <section class="mb-10 overflow-hidden rounded-2xl border border-slate-700/80 bg-gradient-to-br from-slate-800 to-slate-900 shadow-xl" aria-labelledby="filter-heading">
+      <div class="border-b border-slate-700/80 px-5 py-5 sm:px-7">
+        <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+          <div class="flex items-start gap-3">
+            <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-500/15 text-blue-300" aria-hidden="true">
+              <svg viewBox="0 0 24 24" class="h-5 w-5 fill-none stroke-current stroke-2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M7 12h10m-7 6h4" /></svg>
+            </div>
+            <div>
+              <h2 id="filter-heading" class="text-lg font-semibold text-slate-100">Find your next game</h2>
+              <p class="mt-1 text-sm text-slate-400">Choose one or more options to narrow the collection.</p>
+            </div>
+          </div>
+          <span id="results-count" class="inline-flex w-fit items-center rounded-full bg-slate-700/80 px-3 py-1 text-xs font-medium text-slate-300" aria-live="polite">
+            {games.length} games
+          </span>
+        </div>
+      </div>
+
+      <div class="grid gap-7 px-5 py-6 sm:px-7 lg:grid-cols-2">
+        <fieldset data-testid="category-filter" class="space-y-3">
+          <legend class="text-sm font-semibold uppercase tracking-wider text-slate-300">Categories</legend>
+          <div class="flex flex-wrap gap-2">
             {categories.map((category) => (
-              <option value={category.name}>{category.name}</option>
+              <label class="group cursor-pointer">
+                <input type="checkbox" value={category.name} data-filter-group="category" data-testid={`category-filter-${category.name.toLowerCase()}`} class="peer sr-only" />
+                <span class="inline-flex items-center rounded-lg border border-slate-600 bg-slate-800/80 px-3 py-2 text-sm text-slate-300 transition hover:border-blue-400/70 hover:text-slate-100 peer-checked:border-blue-400 peer-checked:bg-blue-500/15 peer-checked:text-blue-200 peer-focus-visible:ring-2 peer-focus-visible:ring-blue-500">
+                  {category.name}
+                </span>
+              </label>
             ))}
-          </select>
-        </div>
+          </div>
+        </fieldset>
 
-        <div class="flex-1">
-          <label for="publisher-filter" class="mb-2 block text-sm font-medium text-slate-200">Filter by publisher</label>
-          <select
-            id="publisher-filter"
-            name="publisher"
-            multiple
-            data-testid="publisher-filter"
-            class="min-h-32 w-full rounded-lg border border-slate-600 bg-slate-900 px-3 py-2 text-slate-100 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-            aria-label="Filter games by publisher"
-          >
+        <fieldset data-testid="publisher-filter" class="space-y-3">
+          <legend class="text-sm font-semibold uppercase tracking-wider text-slate-300">Publishers</legend>
+          <div class="flex flex-wrap gap-2">
             {publishers.map((publisher) => (
-              <option value={publisher.name}>{publisher.name}</option>
+              <label class="group cursor-pointer">
+                <input type="checkbox" value={publisher.name} data-filter-group="publisher" data-testid={`publisher-filter-${publisher.name.toLowerCase().replaceAll(' ', '-')}`} class="peer sr-only" />
+                <span class="inline-flex items-center rounded-lg border border-slate-600 bg-slate-800/80 px-3 py-2 text-sm text-slate-300 transition hover:border-purple-400/70 hover:text-slate-100 peer-checked:border-purple-400 peer-checked:bg-purple-500/15 peer-checked:text-purple-200 peer-focus-visible:ring-2 peer-focus-visible:ring-purple-500">
+                  {publisher.name}
+                </span>
+              </label>
             ))}
-          </select>
-        </div>
+          </div>
+        </fieldset>
+      </div>
 
+      <div class="flex flex-col gap-4 border-t border-slate-700/80 bg-slate-950/20 px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-7">
+        <div class="flex min-h-8 flex-wrap items-center gap-2" id="selected-filters" aria-live="polite">
+          <span class="text-sm text-slate-400">Selected:</span>
+          <span class="text-sm text-slate-500" data-testid="no-filters-selected">None yet</span>
+        </div>
         <div class="flex items-center gap-3">
-          <button
-            type="button"
-            class="inline-flex items-center justify-center rounded-lg border border-slate-600 bg-slate-800 px-4 py-2 text-sm font-medium text-slate-100 transition hover:bg-slate-700 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-            data-testid="clear-filters-link"
-            id="clear-filters-button"
-          >
-            Clear filters
+          <button type="button" class="text-sm font-medium text-slate-400 transition hover:text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-slate-900" data-testid="clear-filters-link" id="clear-filters-button">
+            Clear all
           </button>
-          <button
-            type="button"
-            class="inline-flex items-center justify-center rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-            data-testid="apply-filters-button"
-            id="apply-filters-button"
-          >
-            Apply filters
+          <button type="button" class="inline-flex items-center justify-center rounded-lg bg-blue-700 px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-blue-950/30 transition hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 focus:ring-offset-slate-900" data-testid="apply-filters-button" id="apply-filters-button">
+            Show matching games
           </button>
         </div>
       </div>
-
-      <div class="mt-4 flex flex-wrap items-center gap-3" id="selected-filters" aria-live="polite">
-        <span class="text-sm text-slate-300">Selected:</span>
-        <span class="text-sm text-slate-400" data-testid="no-filters-selected">No filters selected</span>
-      </div>
-    </div>
+    </section>
 
     <div>
-      <h2 class="text-2xl font-medium mb-6 text-slate-100">Featured Games</h2>
+      <div class="mb-6 flex items-end justify-between gap-4">
+        <div>
+          <p class="mb-1 text-sm font-medium uppercase tracking-wider text-blue-400">Explore the collection</p>
+          <h2 class="text-2xl font-semibold text-slate-100">Featured Games</h2>
+        </div>
+      </div>
 
       {games.length === 0 ? (
         <EmptyState text="No games available at the moment." />
@@ -103,18 +112,18 @@ export const prerender = true;
 </Layout>
 
 <script>
-  const categorySelect = document.getElementById('category-filter');
-  const publisherSelect = document.getElementById('publisher-filter');
+  const filterInputs = Array.from(document.querySelectorAll<HTMLInputElement>('input[data-filter-group]'));
   const applyButton = document.getElementById('apply-filters-button');
   const clearButton = document.getElementById('clear-filters-button');
   const selectedFilters = document.getElementById('selected-filters');
-  const gamesGrid = document.querySelector('[data-testid="games-grid"]');
-  const emptyState = document.querySelector('[data-testid="empty-state"]');
-  const allCards = Array.from(document.querySelectorAll('[data-testid="game-card"]'));
+  const resultsCount = document.getElementById('results-count');
+  const gamesGrid = document.querySelector<HTMLElement>('[data-testid="games-grid"]');
+  const emptyState = document.querySelector<HTMLElement>('[data-testid="empty-state"]');
+  const allCards = Array.from(document.querySelectorAll<HTMLElement>('[data-testid="game-card"]'));
 
   function updateSelectionTags() {
-    const selectedCategories = Array.from(categorySelect.selectedOptions).map((option) => option.value);
-    const selectedPublishers = Array.from(publisherSelect.selectedOptions).map((option) => option.value);
+    const selectedCategories = filterInputs.filter((input) => input.checked && input.dataset.filterGroup === 'category').map((input) => input.value);
+    const selectedPublishers = filterInputs.filter((input) => input.checked && input.dataset.filterGroup === 'publisher').map((input) => input.value);
 
     const tags = [];
     for (const name of selectedCategories) {
@@ -125,12 +134,14 @@ export const prerender = true;
     }
 
     const tagMarkup = tags.length > 0 ? tags.join('') : '<span class="text-sm text-slate-400" data-testid="no-filters-selected">No filters selected</span>';
-    selectedFilters.innerHTML = `<span class="text-sm text-slate-300">Selected:</span>${tagMarkup}`;
+    if (selectedFilters) {
+      selectedFilters.innerHTML = `<span class="text-sm text-slate-300">Selected:</span>${tagMarkup}`;
+    }
   }
 
   function applyFilters() {
-    const selectedCategories = Array.from(categorySelect.selectedOptions).map((option) => option.value);
-    const selectedPublishers = Array.from(publisherSelect.selectedOptions).map((option) => option.value);
+    const selectedCategories = filterInputs.filter((input) => input.checked && input.dataset.filterGroup === 'category').map((input) => input.value);
+    const selectedPublishers = filterInputs.filter((input) => input.checked && input.dataset.filterGroup === 'publisher').map((input) => input.value);
 
     for (const card of allCards) {
       const category = card.getAttribute('data-category');
@@ -149,23 +160,20 @@ export const prerender = true;
     if (gamesGrid) {
       gamesGrid.style.display = visibleCards.length === 0 ? 'none' : '';
     }
+    if (resultsCount) {
+      resultsCount.textContent = `${visibleCards.length} ${visibleCards.length === 1 ? 'game' : 'games'}`;
+    }
 
     updateSelectionTags();
   }
 
   function clearFilters() {
-    for (let i = 0; i < categorySelect.options.length; i++) {
-      categorySelect.options[i].selected = false;
-    }
-    for (let i = 0; i < publisherSelect.options.length; i++) {
-      publisherSelect.options[i].selected = false;
-    }
+    for (const input of filterInputs) input.checked = false;
     applyFilters();
   }
 
-  categorySelect.addEventListener('change', updateSelectionTags);
-  publisherSelect.addEventListener('change', updateSelectionTags);
-  applyButton.addEventListener('click', applyFilters);
-  clearButton.addEventListener('click', clearFilters);
+  for (const input of filterInputs) input.addEventListener('change', updateSelectionTags);
+  applyButton?.addEventListener('click', applyFilters);
+  clearButton?.addEventListener('click', clearFilters);
   updateSelectionTags();
 </script>
